@@ -11,7 +11,65 @@
     <modules>
         <module>wrpc-simple</module>
         <module>wrpc-common</module>
+        <module>wprc-consumer</module>
+        <module>wrpc-provider</module>
     </modules>
+
+
+    <properties>
+        <wrpc-common>1.0</wrpc-common>
+        <netty-version>4.1.39.Final</netty-version>
+        <lombok-version>1.16.18</lombok-version>
+        <fastjson-version>1.2.76</fastjson-version>
+        <logback-version>1.2.3</logback-version>
+        <guava-version>30.1.1-android</guava-version>
+        <zookeeper-version>3.7.0</zookeeper-version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.w.wrpc</groupId>
+                <artifactId>wrpc-common</artifactId>
+                <version>${wrpc-common}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava-version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
 </project>

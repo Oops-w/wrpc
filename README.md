@@ -8,7 +8,11 @@
 
   magic 魔术标识
 
-* Req/Res 1bit 
+* Version 8byte
+
+  版本号
+
+* Req/Res 1bit
 
   标识请求是request/response request = 1 response = 0
 
@@ -20,11 +24,7 @@
 
   判断是否是心跳事件 如果是心跳事件 = 1 不是的话= 0
 
-* Version 1bit
-
-  版本
-
-* Serialization 4bit
+* Serialization 5bit
 
   序列化的方式
 
@@ -40,7 +40,7 @@
 
   发送的数据长度 int类型
 
-在这个协议中 Req/Res 2Way Event Version Serialization 是1个byte
+在这个协议中 Req/Res 2Way Event Serialization 是1个byte
 
 > bayte 11111111
 >
@@ -52,7 +52,7 @@
 >
 > Version = 0x10
 >
-> Serialization = 0x0f
+> Serialization = 0x1f
 
 在decode的时候获取byte 然后去与以上的数据进行按位与操作
 

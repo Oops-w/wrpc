@@ -32,11 +32,9 @@ public class ZkServiceRegistryImpl implements ServiceRegistry {
         try {
             if (rpcServiceName != null && address != null) {
                 ZooKeeper client = connectServer();
-                if (client != null) {
-                    createRootNode(client);
-                    createRpcServiceNode(client, rpcServiceName);
-                    createNode(client, rpcServiceName + "/" + address.getHostName() + ":" + address.getPort());
-                }
+                createRootNode(client);
+                createRpcServiceNode(client, rpcServiceName);
+                createNode(client, rpcServiceName + "/" + address.getHostName() + ":" + address.getPort());
             }
         } catch (Exception e) {
             log.error("zookeeper register fail", e);

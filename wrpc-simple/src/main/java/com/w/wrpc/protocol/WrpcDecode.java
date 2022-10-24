@@ -56,13 +56,13 @@ public class WrpcDecode extends ByteToMessageDecoder {
             // 获得Req/Res  2 Way Event Version Serialization的byte
             byte b = byteBuf.readByte();
             //type 为true时序列化成 WrpcRequest 为false时序列化成 WrpcResponse
-            boolean type = (b & WrpcConstants.REQUEST_TYPE) == 1;
+            boolean type = (b & WrpcConstants.REQUEST_TYPE) ==  WrpcConstants.REQUEST_TYPE;
             if (type) {
-                boolean needReturn = (b & WrpcConstants.TWO_WAY) == 1;
+                boolean needReturn = (b & WrpcConstants.TWO_WAY) == WrpcConstants.TWO_WAY;
                 // TODO 对需要返回值的和不需要返回值的做不同处理 考虑后期对不需要返回值的做rpc调用后直接执行后续逻辑
             }
             // 判断是否时心跳事件
-            if ((b & WrpcConstants.EVENT) == 1) {
+            if ((b & WrpcConstants.EVENT) == WrpcConstants.EVENT) {
                 // TODO 心跳事件可以考虑另起一个线程进行selector
             }
             // 得到序列化方式

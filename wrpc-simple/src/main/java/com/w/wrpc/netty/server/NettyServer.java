@@ -58,9 +58,9 @@ public class NettyServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ChannelPipeline pipeline = ch.pipeline();
-                            // TODO 30s 没收到消息就关闭channel
+                            // 30s 没收到消息就关闭channel
                             pipeline.addLast(new IdleStateHandler(0, 0, 30));
                             pipeline.addLast(new NettyServerHandler());
                             log.info("netty server start success listen port :" + serverPort);
@@ -72,6 +72,7 @@ public class NettyServer {
         } catch (Exception e) {
             log.error("netty server start fail", e);
         } finally {
+            log.info("netty server stop");
             boss.shutdownGracefully();
             worker.shutdownGracefully();
             handlerThread.shutdownGracefully();

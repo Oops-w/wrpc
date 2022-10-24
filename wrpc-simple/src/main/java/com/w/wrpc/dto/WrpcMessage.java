@@ -31,7 +31,7 @@ public class WrpcMessage implements Serializable {
     /**
      * 序列化方式
      */
-    private Byte Serialization;
+    private Byte serialization;
 
     /**
      * 版本号
@@ -76,11 +76,19 @@ public class WrpcMessage implements Serializable {
     }
 
     public Byte getSerialization() {
-        return Serialization;
+        return serialization;
     }
 
     public void setSerialization(Byte serialization) {
-        Serialization = serialization;
+        this.serialization = serialization;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Byte getVersion() {
@@ -91,16 +99,16 @@ public class WrpcMessage implements Serializable {
         this.version = version;
     }
 
-
     @Override
     public String toString() {
-        return "Message{" +
+        return "WrpcMessage{" +
                 "requestID=" + requestID +
                 ", requestType=" + requestType +
                 ", heartbeat=" + heartbeat +
                 ", needReturn=" + needReturn +
-                ", Serialization=" + Serialization +
+                ", serialization=" + serialization +
                 ", version=" + version +
+                ", status=" + status +
                 '}';
     }
 }

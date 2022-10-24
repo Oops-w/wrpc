@@ -54,10 +54,30 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state().equals(IdleState.WRITER_IDLE)) {
                 // TODO send heartbeat
-                log.info("write idle happen [{}]", ctx.channel().remoteAddress());
-                Channel channel = channelProvider.get((InetSocketAddress) ctx.channel().remoteAddress());
+                Channel serverChannel = ctx.channel();
+                log.info("write idle happen [{}]", serverChannel.remoteAddress());
+                serverChannel.writeAndFlush(buildHeartbeatMessage());
             }
         }
         super.userEventTriggered(ctx, evt);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        log.info("current channel closed...");
+    }
+
+    private WrpcMessage<String> buildHeartbeatMessage() {
+        WrpcMessage<String> wrpcMessage = new WrpcMessage<>();
+
+        wrpcMessage.setRequestID(Snowflake.getInstance().nextId());
+        wrpcMessage.setHeartbeat(true);
+        wrpcMessage.setRequestType(true);
+        wrpcMessage.setVersion(new Byte("1"));
+        wrpcMessage.setSerialization(SerializationEnum.JSON.getCode());
+        wrpcMessage.setData("heartbeat");
+
+        return wrpcMessage;
     }
 }

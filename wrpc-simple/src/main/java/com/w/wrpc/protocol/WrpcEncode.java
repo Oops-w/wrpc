@@ -1,6 +1,8 @@
 package com.w.wrpc.protocol;
 
-import com.w.wrpc.SerializationEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.w.wrpc.serializa.SerializationEnum;
 import com.w.wrpc.constants.WrpcConstants;
 import com.w.wrpc.dto.WrpcMessage;
 import io.netty.buffer.ByteBuf;
@@ -80,9 +82,12 @@ public class WrpcEncode extends MessageToByteEncoder<WrpcMessage> {
         }
     }
 
-    private byte[] serialize(Object data, Byte serialization) {
+    private byte[] serialize(Object data, Byte serialization) throws JsonProcessingException {
         if (SerializationEnum.HEARTBEAT.getCode().equals(serialization)) {
             return new byte[0];
+        } else if (SerializationEnum.JSON.getCode().equals(serialization)) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(data).getBytes();
         }
         return new byte[0];
     }

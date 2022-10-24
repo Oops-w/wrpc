@@ -1,7 +1,9 @@
 package com.w.wrpc.protocol;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.w.wrpc.constants.WrpcConstants;
 import com.w.wrpc.exception.MagicIllegalException;
+import com.w.wrpc.serializa.SerializationEnum;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -53,6 +55,9 @@ public class WrpcDecode extends ByteToMessageDecoder {
             if (!Arrays.equals(magic, WrpcConstants.MAGIC)) {
                 throw new MagicIllegalException("magic illegal");
             }
+
+            byte version = byteBuf.readByte();
+
             // 获得Req/Res  2 Way Event Version Serialization的byte
             byte b = byteBuf.readByte();
             //type 为true时序列化成 WrpcRequest 为false时序列化成 WrpcResponse
@@ -63,18 +68,24 @@ public class WrpcDecode extends ByteToMessageDecoder {
             }
             // 判断是否时心跳事件
             if ((b & WrpcConstants.EVENT) == WrpcConstants.EVENT) {
-                // TODO 心跳事件可以考虑另起一个线程进行selector
+                log.info("accept origin {} heartbeat info", ctx.channel().remoteAddress());
             }
             // 得到序列化方式
             byte serialization = (byte) (b & WrpcConstants.SERIALIZATION);
-            // 根据type得到序列化后的对象
-            // TODO 写序列化的方法
-            Object obj = new Object();
+
             long requestID = byteBuf.readLong();
             int dataLength = byteBuf.readInt();
             //读取预留字段
             byteBuf.readBytes(new byte[WrpcConstants.RESERVE_LENGTH]);
-            out.add(obj);
+            // 根据type得到序列化后的对象
+            byte[] bytes = new byte[dataLength];
+            byteBuf.readBytes(bytes);
+            // TODO 暂时只有JSON
+            if (SerializationEnum.JSON.getCode().equals(serialization)) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Object obj = objectMapper.readValue(new String(bytes), Object.class);
+                out.add(obj);
+            }
         } catch (MagicIllegalException e) {
             log.error("decode exception", e);
             throw new RuntimeException("decode exception ", e);

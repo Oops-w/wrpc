@@ -1,9 +1,9 @@
 package com.w.wrpc.protocol;
 
+import com.w.wrpc.SerializationEnum;
 import com.w.wrpc.constants.WrpcConstants;
 import com.w.wrpc.dto.WrpcMessage;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.extern.slf4j.Slf4j;
@@ -62,11 +62,11 @@ public class WrpcEncode extends MessageToByteEncoder<WrpcMessage> {
                 b |= WrpcConstants.EVENT;
             }
             // 添加序列化方式
-            b |= WrpcConstants.SERIALIZATION;
+            b |= message.getSerialization();
             out.writeByte(b);
             out.writeLong(message.getRequestID());
-            // TODO 获得序列化后的length
-            byte[] bytes = {1, 2, 3};
+            // TODO 根据选择的序列化方式进行序列化 目前默认使用JSON
+            byte[] bytes = serialize(message.getData(), message.getSerialization());
             int dataLength = bytes.length;
             out.writeInt(dataLength);
             // 填写预留字段
@@ -78,5 +78,12 @@ public class WrpcEncode extends MessageToByteEncoder<WrpcMessage> {
             log.error("encode exception", e);
             throw new RuntimeException("encode exception ", e);
         }
+    }
+
+    private byte[] serialize(Object data, Byte serialization) {
+        if (SerializationEnum.HEARTBEAT.getCode().equals(serialization)) {
+            return new byte[0];
+        }
+        return new byte[0];
     }
 }

@@ -3,6 +3,9 @@ package com.w.wrpc.netty.server;
 
 import com.w.wrpc.config.WrpcConfig;
 import com.w.wrpc.factory.SingletonBeanFactory;
+import com.w.wrpc.protocol.WrpcDecode;
+import com.w.wrpc.protocol.WrpcEncode;
+import com.w.wrpc.protocol.WrpcLengthFieldBasedFrameDecoder;
 import com.w.wrpc.provider.ServiceProvider;
 import com.w.wrpc.provider.impl.ZkServiceProviderImpl;
 import com.w.wrpc.util.ThreadPoolFactoryUtils;
@@ -11,6 +14,9 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +48,7 @@ public class NettyServer {
      * 开启netty服务器 只执行一次
      */
     private void start() {
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
         NioEventLoopGroup boss = new NioEventLoopGroup(1);
         NioEventLoopGroup worker = new NioEventLoopGroup();
         NioEventLoopGroup handlerThread = new NioEventLoopGroup(
@@ -60,10 +67,13 @@ public class NettyServer {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             ChannelPipeline pipeline = ch.pipeline();
+                            pipeline.addLast(new WrpcLengthFieldBasedFrameDecoder());
+                            pipeline.addLast(loggingHandler);
                             // 30s 没收到消息就关闭channel
                             pipeline.addLast(new IdleStateHandler(0, 0, 30));
+                            pipeline.addLast(new WrpcEncode());
+                            pipeline.addLast(new WrpcDecode());
                             pipeline.addLast(new NettyServerHandler());
-                            log.info("netty server start success listen port :" + serverPort);
                         }
                     }).bind(serverPort).sync().channel();
             log.info("netty server start success port {}", WrpcConfig.getServerPort());

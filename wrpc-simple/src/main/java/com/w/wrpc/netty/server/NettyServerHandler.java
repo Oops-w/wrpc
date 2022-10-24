@@ -37,6 +37,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        log.info("msg: {}", msg);
         super.channelRead(ctx, msg);
     }
 
@@ -53,6 +54,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.ALL_IDLE) {
                 log.info("客户端已超过30秒未读写数据,关闭连接.{}", ctx.channel().remoteAddress());
+                ctx.close();
             }
         }
         super.userEventTriggered(ctx, evt);

@@ -17,7 +17,7 @@ public class PropertiesTest {
     @Test
     public void test() throws IOException {
         Properties properties = new Properties();
-        InputStream is = WrpcConfig.class.getClassLoader().getResourceAsStream("application.properties");
+        InputStream is = WrpcConfig.class.getClassLoader().getResourceAsStream("server.properties");
         properties.load(is);
         System.out.println(properties);
     }

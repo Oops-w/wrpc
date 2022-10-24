@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @date 2021/9/21 10:33 上午
  * @Description
  */
-public class WrpcMessage implements Serializable {
+public class WrpcMessage <T> implements Serializable {
     /**
      * 请求ID
      */
@@ -39,9 +39,9 @@ public class WrpcMessage implements Serializable {
     private Byte version;
 
     /**
-     * 状态码 仅当response的时候有效
+     * 数据
      */
-    private int status;
+    private T data;
 
     public Long getRequestID() {
         return requestID;
@@ -83,20 +83,20 @@ public class WrpcMessage implements Serializable {
         this.serialization = serialization;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public Byte getVersion() {
         return version;
     }
 
     public void setVersion(Byte version) {
         this.version = version;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class WrpcMessage implements Serializable {
                 ", needReturn=" + needReturn +
                 ", serialization=" + serialization +
                 ", version=" + version +
-                ", status=" + status +
+                ", data=" + data +
                 '}';
     }
 }

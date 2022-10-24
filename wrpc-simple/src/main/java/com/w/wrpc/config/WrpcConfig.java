@@ -14,18 +14,18 @@ import java.util.Properties;
  */
 @Slf4j
 public class WrpcConfig {
-    private static final String PROPERTIES_PATH = "application.properties";
-    private static final Properties properties = new Properties();
+    private static final String PROPERTIES_PATH = "server.properties";
+    private static final Properties PROPERTIES = new Properties();
     private static final String SERVER_PORT = "server.port";
     private static final String REGISTRY_ADDRESS = "registry.address";
     private static final String RPC_SERVER_ADDRESS = "rpc.server.address";
 
     static {
-        InputStream is = null;
+        InputStream is;
         try {
             //初始化properties
             is = WrpcConfig.class.getClassLoader().getResourceAsStream(PROPERTIES_PATH);
-            properties.load(is);
+            PROPERTIES.load(is);
         } catch (FileNotFoundException e) {
             log.error("load file not exist : ", e);
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class WrpcConfig {
      * @return server.port
      */
     public static Integer getServerPort() {
-        return Integer.valueOf((String) properties.get(SERVER_PORT));
+        return Integer.valueOf((String) PROPERTIES.get(SERVER_PORT));
     }
 
     /**
@@ -50,7 +50,7 @@ public class WrpcConfig {
      * @return registry.address
      */
     public static String getRegistryAddress() {
-        return (String) properties.get(REGISTRY_ADDRESS);
+        return (String) PROPERTIES.get(REGISTRY_ADDRESS);
     }
 
     /**
@@ -59,7 +59,7 @@ public class WrpcConfig {
      * @return rpc.server.address
      */
     public static String getRpcServerAddress() {
-        return (String) properties.get(RPC_SERVER_ADDRESS);
+        return (String) PROPERTIES.get(RPC_SERVER_ADDRESS);
     }
 
 }

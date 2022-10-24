@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 public class ChannelProvider {
-    private Map<String, Channel> map = new ConcurrentHashMap<>();
+    private final Map<String, Channel> ipChannelMap = new ConcurrentHashMap<>();
 
     /**
      * 绑定ip地址和channel的关系
@@ -24,10 +24,10 @@ public class ChannelProvider {
      */
     public void set(InetSocketAddress inetSocketAddress, Channel channel) {
         String key = inetSocketAddress.toString();
-        if (map.containsKey(key)) {
+        if (ipChannelMap.containsKey(key)) {
             return;
         }
-        map.put(key, channel);
+        ipChannelMap.put(key, channel);
         log.info("inetSocketAddress {} channel {} bind success", inetSocketAddress, channel);
     }
 
@@ -39,12 +39,12 @@ public class ChannelProvider {
      */
     public Channel get(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
-        Channel channel = map.get(key);
+        Channel channel = ipChannelMap.get(key);
         if (channel != null && channel.isActive()) {
             return channel;
         } else {
             // address 对应的channel 不存在 可能是被关闭了
-            map.remove(key);
+            ipChannelMap.remove(key);
         }
         return null;
     }
@@ -56,8 +56,8 @@ public class ChannelProvider {
      */
     public void remove(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
-        map.remove(key);
-        log.info("Channel map size :[{}]", map.size());
+        ipChannelMap.remove(key);
+        log.info("Channel map size :[{}]", ipChannelMap.size());
     }
 
 }

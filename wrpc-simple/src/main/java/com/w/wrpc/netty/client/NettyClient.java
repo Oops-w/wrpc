@@ -8,6 +8,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @Description
  */
 public class NettyClient {
+    private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
     private Bootstrap bootstrap;
     private NioEventLoopGroup worker;
 
@@ -48,6 +51,7 @@ public class NettyClient {
         Channel channel = null;
         try {
             channel = bootstrap.connect(inetSocketAddress).sync().channel();
+            logger.info("connect server {} success", inetSocketAddress.getAddress().toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

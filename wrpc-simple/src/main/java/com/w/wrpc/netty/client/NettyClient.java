@@ -1,5 +1,8 @@
 package com.w.wrpc.netty.client;
 
+import com.w.wrpc.protocol.WrpcDecode;
+import com.w.wrpc.protocol.WrpcEncode;
+import com.w.wrpc.protocol.WrpcLengthFieldBasedFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -7,10 +10,13 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +30,8 @@ public class NettyClient {
     private Bootstrap bootstrap;
     private NioEventLoopGroup worker;
 
-    public NettyClient() {
+    public NettyClient() throws InterruptedException {
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
         worker = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap
@@ -34,11 +41,16 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
+                        p.addLast(new WrpcLengthFieldBasedFrameDecoder());
+                        p.addLast(loggingHandler);
                         // If no data is sent to the server within 15 seconds, a heartbeat request is sent
                         p.addLast(new IdleStateHandler(0, 15, 0, TimeUnit.SECONDS));
+                        p.addLast(new WrpcDecode());
+                        p.addLast(new WrpcEncode());
                         p.addLast(new NettyClientHandler());
                     }
                 });
+        doConnect(new InetSocketAddress("localhost", 9999));
     }
 
     /**

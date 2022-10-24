@@ -8,7 +8,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  * @date 2021/9/21 1:09 下午
  * @Description
  */
-@ChannelHandler.Sharable
 public class WrpcLengthFieldBasedFrameDecoder extends LengthFieldBasedFrameDecoder {
     public WrpcLengthFieldBasedFrameDecoder() {
         // magic 4 byte version 1 byte struct 1 byte requestID 8byte dataLength 4 byte reserve 14 byte

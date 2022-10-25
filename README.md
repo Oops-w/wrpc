@@ -42,7 +42,7 @@
 
 在这个协议中 Req/Res 2Way Event Serialization 是1个byte
 
-> bayte 11111111
+> byte 11111111
 >
 > Req/Res = 0x80
 >
@@ -50,7 +50,6 @@
 >
 > Event = 0x20
 >
-> Version = 0x10
 >
 > Serialization = 0x1f
 

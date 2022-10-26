@@ -31,7 +31,7 @@ public class NettyClient {
     private NioEventLoopGroup worker;
 
     public NettyClient() throws InterruptedException {
-        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.ERROR);
         worker = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap
@@ -42,11 +42,13 @@ public class NettyClient {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
                         p.addLast(new WrpcLengthFieldBasedFrameDecoder());
-                        p.addLast(loggingHandler);
+
                         // If no data is sent to the server within 15 seconds, a heartbeat request is sent
-                        p.addLast(new IdleStateHandler(0, 15, 0, TimeUnit.SECONDS));
+                        p.addLast(new IdleStateHandler(0, 1, 0, TimeUnit.SECONDS));
+                        p.addLast(loggingHandler);
                         p.addLast(new WrpcDecode());
                         p.addLast(new WrpcEncode());
+
                         p.addLast(new NettyClientHandler());
                     }
                 });
@@ -68,6 +70,12 @@ public class NettyClient {
             e.printStackTrace();
         }
         return channel;
+    }
+
+    public static void main(String[] args) throws InterruptedException, IOException {
+        NettyClient nettyClient = new NettyClient();
+
+        System.in.read();
     }
 
 }

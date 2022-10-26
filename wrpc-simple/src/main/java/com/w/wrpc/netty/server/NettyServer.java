@@ -14,12 +14,13 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
 
 /**
  * @author wsy
@@ -48,7 +49,7 @@ public class NettyServer {
      * 开启netty服务器 只执行一次
      */
     private void start() {
-        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.DEBUG);
+        LoggingHandler loggingHandler = new LoggingHandler(LogLevel.ERROR);
         NioEventLoopGroup boss = new NioEventLoopGroup(1);
         NioEventLoopGroup worker = new NioEventLoopGroup();
         NioEventLoopGroup handlerThread = new NioEventLoopGroup(
@@ -68,11 +69,14 @@ public class NettyServer {
                         protected void initChannel(SocketChannel ch) {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new WrpcLengthFieldBasedFrameDecoder());
-                            pipeline.addLast(loggingHandler);
+
                             // 30s 没收到消息就关闭channel
                             pipeline.addLast(new IdleStateHandler(0, 0, 30));
+                            pipeline.addLast(loggingHandler);
+
                             pipeline.addLast(new WrpcEncode());
                             pipeline.addLast(new WrpcDecode());
+                            pipeline.addLast(new ServerHeartbeatHandler());
                             pipeline.addLast(new NettyServerHandler());
                         }
                     }).bind(serverPort).sync().channel();
@@ -87,5 +91,11 @@ public class NettyServer {
             worker.shutdownGracefully();
             handlerThread.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        NettyServer nettyServer = new NettyServer();
+
+        System.in.read();
     }
 }

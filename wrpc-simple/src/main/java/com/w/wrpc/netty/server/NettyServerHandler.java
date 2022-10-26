@@ -38,6 +38,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        log.info("accept origin remote [{}] message:[{}]", ctx.channel().remoteAddress(), msg);
 
         super.channelRead(ctx, msg);
     }

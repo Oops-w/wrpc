@@ -16,9 +16,15 @@ import java.util.Properties;
 public class WrpcConfig {
     private static final String PROPERTIES_PATH = "server.properties";
     private static final Properties PROPERTIES = new Properties();
-    private static final String SERVER_PORT = "server.port";
-    private static final String REGISTRY_ADDRESS = "registry.address";
-    private static final String RPC_SERVER_ADDRESS = "rpc.server.address";
+    private static final String SERVER_PORT_STRING = "server.port";
+    private static final String REGISTRY_ADDRESS_STRING = "registry.address";
+    private static final String RPC_SERVER_ADDRESS_STRING = "rpc.server.address";
+    private static final String RPC_CLIENT_HEARTBEAT_TIME_STRING = "rpc.client.heartbeat.time";
+
+    /**
+     * rpc client default alive 15s
+     */
+    private static final long RPC_CLIENT_HEARTBEAT_TIME = 15 * 1000;
 
     static {
         InputStream is;
@@ -41,7 +47,7 @@ public class WrpcConfig {
      * @return server.port
      */
     public static Integer getServerPort() {
-        return Integer.valueOf((String) PROPERTIES.get(SERVER_PORT));
+        return Integer.valueOf((String) PROPERTIES.get(SERVER_PORT_STRING));
     }
 
     /**
@@ -50,7 +56,7 @@ public class WrpcConfig {
      * @return registry.address
      */
     public static String getRegistryAddress() {
-        return (String) PROPERTIES.get(REGISTRY_ADDRESS);
+        return (String) PROPERTIES.get(REGISTRY_ADDRESS_STRING);
     }
 
     /**
@@ -59,7 +65,17 @@ public class WrpcConfig {
      * @return rpc.server.address
      */
     public static String getRpcServerAddress() {
-        return (String) PROPERTIES.get(RPC_SERVER_ADDRESS);
+        return (String) PROPERTIES.get(RPC_SERVER_ADDRESS_STRING);
     }
 
+    /**
+     * 获得rpc的存活时间（心跳获取时间）
+     */
+    public static Long getRpcClientHeartbeatTime() {
+        try {
+            return Long.valueOf(PROPERTIES.getProperty(RPC_CLIENT_HEARTBEAT_TIME_STRING));
+        } catch (Exception e) {
+            return RPC_CLIENT_HEARTBEAT_TIME;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.w.wrpc.netty.server;
 
 
+import com.w.wrpc.RpcService;
 import com.w.wrpc.config.WrpcConfig;
 import com.w.wrpc.factory.SingletonBeanFactory;
 import com.w.wrpc.protocol.WrpcDecode;
@@ -8,6 +9,7 @@ import com.w.wrpc.protocol.WrpcEncode;
 import com.w.wrpc.protocol.WrpcLengthFieldBasedFrameDecoder;
 import com.w.wrpc.provider.ServiceProvider;
 import com.w.wrpc.provider.impl.ZkServiceProviderImpl;
+import com.w.wrpc.util.ClassUtil;
 import com.w.wrpc.util.ThreadPoolFactoryUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -21,6 +23,9 @@ import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * @author wsy
@@ -81,6 +86,9 @@ public class NettyServer {
                         }
                     }).bind(serverPort).sync().channel();
             log.info("netty server start success port {}", WrpcConfig.getServerPort());
+
+            initRpcService();
+
             //利用closeFuture 阻塞
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -90,6 +98,19 @@ public class NettyServer {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
             handlerThread.shutdownGracefully();
+        }
+    }
+
+    private void initRpcService() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<Class<?>> classes = ClassUtil.getClasses("wrpc");
+
+        for (Class<?> clazz : classes) {
+            if (clazz.isAnnotationPresent(RpcService.class)) {
+                log.info("{}", clazz);
+                Constructor<?> constructor = clazz.getConstructor();
+                Object instance = constructor.newInstance();
+                registryService(clazz.getName(), instance);
+            }
         }
     }
 

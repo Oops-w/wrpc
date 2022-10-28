@@ -17,6 +17,12 @@
             <artifactId>wrpc-simple</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.w.wrpc</groupId>
+            <artifactId>wrpc-simple</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>

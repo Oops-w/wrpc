@@ -1,6 +1,8 @@
 package wrpc.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.w.wrpc.RpcService;
+import com.w.wrpc.serializa.SerializationEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wrpc.pojo.InfoUser;
@@ -13,6 +15,7 @@ import java.util.*;
  * @date 2021/9/21 8:53 下午
  * @Description
  */
+@RpcService(serialization = SerializationEnum.JSON, version = 1)
 public class InfoUserServiceImpl implements InfoUserService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
     //当做数据库，存储用户信息

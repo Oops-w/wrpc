@@ -16,7 +16,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +29,7 @@ public class NettyClient {
     private Bootstrap bootstrap;
     private NioEventLoopGroup worker;
 
-    public NettyClient() throws InterruptedException {
+    public NettyClient() {
         LoggingHandler loggingHandler = new LoggingHandler(LogLevel.ERROR);
         worker = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
@@ -71,11 +70,4 @@ public class NettyClient {
         }
         return channel;
     }
-
-    public static void main(String[] args) throws InterruptedException, IOException {
-        NettyClient nettyClient = new NettyClient();
-
-        System.in.read();
-    }
-
 }

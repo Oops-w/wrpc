@@ -49,7 +49,7 @@ public class ZkServiceProviderImpl implements ServiceProvider {
         }
         serviceMap.put(rpcServiceName, serviceObject);
         registeredService.add(rpcServiceName);
-        log.info("add service {} and interfaces {}", rpcServiceName, serviceObject.getClass().getInterfaces());
+        log.info("add service [{}]", rpcServiceName, serviceObject.getClass().getInterfaces());
     }
 
     @Override
@@ -62,11 +62,13 @@ public class ZkServiceProviderImpl implements ServiceProvider {
     }
 
     @Override
-    public void publishService(String rpcServiceName, Object serviceObject) {
+    public void publishService(String className, Object serviceObject) {
         try {
+            StringBuilder rpcServiceName = new StringBuilder(className);
+            rpcServiceName.append("/providers");
             // 注册当前提供者的接口和提供者的地址到注册中心
-            serviceRegistry.registry(rpcServiceName, new InetSocketAddress(InetAddress.getLocalHost().getHostName(), WrpcConfig.getServerPort()));
-            this.addService(rpcServiceName, serviceObject);
+            serviceRegistry.registry(rpcServiceName.toString(), new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), WrpcConfig.getServerPort()));
+            this.addService(className, serviceObject);
         } catch (UnknownHostException e) {
             log.error("unknown host exception", e);
         }

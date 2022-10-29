@@ -22,8 +22,8 @@ public interface ServiceProvider {
 
     /**
      * 将服务进行创建和注册
-     * @param rpcServiceName rpc service name
+     * @param className     class name
      * @param serviceObject 注册的服务
      */
-    void publishService(String rpcServiceName, Object serviceObject);
+    void publishService(String className, Object serviceObject);
 }

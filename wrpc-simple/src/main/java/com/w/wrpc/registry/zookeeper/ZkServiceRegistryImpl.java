@@ -33,7 +33,11 @@ public class ZkServiceRegistryImpl implements ServiceRegistry {
             if (rpcServiceName != null && address != null) {
                 ZooKeeper client = connectServer();
                 createRootNode(client);
-                createRpcServiceNode(client, rpcServiceName);
+                // create server node
+                String[] split = rpcServiceName.split("/");
+                String className = split[0];
+                createPersistenceNode(client, className);
+                createPersistenceNode(client, rpcServiceName);
                 createNode(client, rpcServiceName + "/" + address.getHostName() + ":" + address.getPort());
             }
         } catch (Exception e) {
@@ -75,12 +79,12 @@ public class ZkServiceRegistryImpl implements ServiceRegistry {
      * @param client
      * @param rpcServiceName
      */
-    private void createRpcServiceNode(ZooKeeper client, String rpcServiceName) throws KeeperException, InterruptedException {
+    private void createPersistenceNode(ZooKeeper client, String rpcServiceName) throws KeeperException, InterruptedException {
         String rpcServiceNodeName = WrpcConstants.ZK_REGISTRY_SERVICE_ROOT_PATH + "/" + rpcServiceName;
         Stat exists = ZooKeeperUtil.exist(client, rpcServiceNodeName);
         if (exists == null) {
             String resultPath = ZooKeeperUtil.create(client, rpcServiceNodeName, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            log.info("创建rpc服务节点 {}", resultPath);
+            log.info("创建持久化服务节点 [{}]", resultPath);
         }
     }
 
@@ -94,6 +98,6 @@ public class ZkServiceRegistryImpl implements ServiceRegistry {
      */
     private void createNode(ZooKeeper client, String path) throws KeeperException, InterruptedException {
         String resultPath = ZooKeeperUtil.create(client, WrpcConstants.ZK_REGISTRY_SERVICE_ROOT_PATH + "/" + path, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-        log.info("创建rpc provider节点 ({})", resultPath);
+        log.info("创建节点 ({})", resultPath);
     }
 }

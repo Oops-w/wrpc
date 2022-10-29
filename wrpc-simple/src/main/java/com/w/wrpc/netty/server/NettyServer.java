@@ -1,15 +1,10 @@
 package com.w.wrpc.netty.server;
 
 
-import com.w.wrpc.RpcService;
 import com.w.wrpc.config.WrpcConfig;
-import com.w.wrpc.factory.SingletonBeanFactory;
 import com.w.wrpc.protocol.WrpcDecode;
 import com.w.wrpc.protocol.WrpcEncode;
 import com.w.wrpc.protocol.WrpcLengthFieldBasedFrameDecoder;
-import com.w.wrpc.provider.ServiceProvider;
-import com.w.wrpc.provider.impl.ZkServiceProviderImpl;
-import com.w.wrpc.util.ClassUtil;
 import com.w.wrpc.util.ThreadPoolFactoryUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -22,11 +17,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.NettyRuntime;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
 /**
  * @author wsy
  * @date 2021/9/21 9:19 下午
@@ -34,20 +24,11 @@ import java.util.List;
  */
 @Slf4j
 public class NettyServer {
-    private ServiceProvider serviceProvider ;
+    private Channel channel;
 
     public NettyServer() {
-        serviceProvider = SingletonBeanFactory.getInstance().getBean("zkServiceProvider", ZkServiceProviderImpl.class);
-        start();
-    }
-
-    /**
-     * 注册服务
-     *
-     * @param serviceName 服务的全限定类名
-     */
-    public void registryService(String serviceName, Object serviceObject) {
-        serviceProvider.publishService(serviceName, serviceObject);
+        new Thread(() -> start(), "netty-start-thread")
+                .start();
     }
 
     /**
@@ -86,9 +67,7 @@ public class NettyServer {
                         }
                     }).bind(serverPort).sync().channel();
             log.info("netty server start success port {}", WrpcConfig.getServerPort());
-
-            initRpcService();
-
+            this.channel = channel;
             //利用closeFuture 阻塞
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -101,22 +80,7 @@ public class NettyServer {
         }
     }
 
-    private void initRpcService() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        List<Class<?>> classes = ClassUtil.getClasses("wrpc");
-
-        for (Class<?> clazz : classes) {
-            if (clazz.isAnnotationPresent(RpcService.class)) {
-                log.info("{}", clazz);
-                Constructor<?> constructor = clazz.getConstructor();
-                Object instance = constructor.newInstance();
-                registryService(clazz.getName(), instance);
-            }
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        NettyServer nettyServer = new NettyServer();
-
-        System.in.read();
+    public void writeAndFlush(Object msg) {
+        channel.writeAndFlush(msg);
     }
 }

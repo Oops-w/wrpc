@@ -1,15 +1,16 @@
-import com.w.wrpc.netty.server.NettyServer;
+package com.w.wrpc;
 
 import java.io.IOException;
 
 /**
  * @author wsy
- * @date 2021/9/22 5:39 下午
+ * @date 2022/10/29 6:49 PM
  * @Description
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        NettyServer nettyServer = new NettyServer();
+        WrpcClientInstance wrpcClientInstance = new WrpcClientInstance();
+
         System.in.read();
     }
 }

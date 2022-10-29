@@ -18,10 +18,10 @@ public @interface RpcService {
     /**
      * 序列化方式
      */
-    SerializationEnum serialization();
+    SerializationEnum serialization() default SerializationEnum.JSON;
 
     /**
      * 版本
      */
-    byte version();
+    byte version() default 1;
 }

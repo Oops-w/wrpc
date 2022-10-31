@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author wsy
@@ -24,10 +25,12 @@ import java.util.Objects;
 public class WrpcServiceInvocationHandler implements InvocationHandler {
     private final Object target;
     private final ObjectMapper objectMapper;
+    private CountDownLatch countDownLatch;
 
     public WrpcServiceInvocationHandler(Object target) {
         this.target = target;
         this.objectMapper = new ObjectMapper();
+        this.countDownLatch = new CountDownLatch(0);
     }
 
     @Override
@@ -40,7 +43,6 @@ public class WrpcServiceInvocationHandler implements InvocationHandler {
         }
         Iterator<WrpcInstance> iterator = staredServer.iterator();
         WrpcServerInstance wrpcInstance = (WrpcServerInstance) iterator.next();
-        wrpcInstance.writeAndFlush(wrpcMessage);
 
         // todo 如何接收异步的消息?
         return "hello world";

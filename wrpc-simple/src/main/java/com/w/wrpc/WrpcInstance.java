@@ -6,6 +6,6 @@ package com.w.wrpc;
  * @Description
  */
 
-public interface WrpcInstance {
+public interface WrpcInstance extends Channel {
 
 }

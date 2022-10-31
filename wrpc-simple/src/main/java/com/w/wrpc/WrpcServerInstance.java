@@ -62,8 +62,14 @@ public class WrpcServerInstance implements WrpcInstance {
         return values;
     }
 
-    public void writeAndFlush(Object msg) {
+    @Override
+    public void send(Object msg) {
         nettyServer.writeAndFlush(msg);
+    }
+
+    @Override
+    public Object receive() {
+        return null;
     }
 
     private void initRegistryService() throws Exception {

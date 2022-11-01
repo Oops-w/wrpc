@@ -2,12 +2,11 @@ package com.w.wrpc.proxy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.w.wrpc.RpcService;
+import com.w.wrpc.annotation.RpcService;
 import com.w.wrpc.WrpcInstance;
 import com.w.wrpc.WrpcServerInstance;
 import com.w.wrpc.dto.WrpcMessage;
 import com.w.wrpc.enums.RequestTypeEnum;
-import com.w.wrpc.factory.JDKProxyFacotry;
 import com.w.wrpc.util.Snowflake;
 
 import java.lang.reflect.InvocationHandler;

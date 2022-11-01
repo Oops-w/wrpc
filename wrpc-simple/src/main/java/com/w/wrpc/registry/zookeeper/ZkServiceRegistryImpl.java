@@ -10,6 +10,8 @@ import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.Collection;
 
 /**
  * @author wsy
@@ -20,29 +22,41 @@ import java.net.InetSocketAddress;
 public class ZkServiceRegistryImpl implements ServiceRegistry {
 
     /**
-     * 注册方式 例子: /rpc/com.w.wrpc.HelloService/192.168.1.1
+     * 注册方式 例子: /rpc/com.w.wrpc.HelloService
      * /root/serviceName/ip address
      * 持久化节点       临时节点
      *
      * @param rpcServiceName 注册的服务名
-     * @param address        {@link InetSocketAddress} 注册的地址
+     * @param uri        {@link URI} 注册的uri
      */
     @Override
-    public void registry(String rpcServiceName, InetSocketAddress address) {
+    public void registerService(String rpcServiceName, URI uri) {
         try {
-            if (rpcServiceName != null && address != null) {
+            if (rpcServiceName != null && uri != null) {
                 ZooKeeper client = connectServer();
                 createRootNode(client);
                 // create server node
-                String[] split = rpcServiceName.split("/");
-                String className = split[0];
-                createPersistenceNode(client, className);
                 createPersistenceNode(client, rpcServiceName);
-                createNode(client, rpcServiceName + "/" + address.getHostName() + ":" + address.getPort());
+                createNode(client, rpcServiceName, uri.toString().getBytes());
             }
         } catch (Exception e) {
             log.error("zookeeper register fail", e);
         }
+    }
+
+    @Override
+    public URI lockupService(String serviceName) {
+        return null;
+    }
+
+    @Override
+    public void connect(URI serviceRegistryUri) {
+        connectServer();
+    }
+
+    @Override
+    public Collection<String> supportedSchemes() {
+        return null;
     }
 
 
@@ -96,8 +110,8 @@ public class ZkServiceRegistryImpl implements ServiceRegistry {
      * @throws KeeperException
      * @throws InterruptedException
      */
-    private void createNode(ZooKeeper client, String path) throws KeeperException, InterruptedException {
-        String resultPath = ZooKeeperUtil.create(client, WrpcConstants.ZK_REGISTRY_SERVICE_ROOT_PATH + "/" + path, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+    private void createNode(ZooKeeper client, String path, byte[] data) throws KeeperException, InterruptedException {
+        String resultPath = ZooKeeperUtil.create(client, WrpcConstants.ZK_REGISTRY_SERVICE_ROOT_PATH + "/" + path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         log.info("创建节点 ({})", resultPath);
     }
 }

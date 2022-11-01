@@ -1,7 +1,7 @@
 package wrpc.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.w.wrpc.RpcService;
+import com.w.wrpc.annotation.RpcService;
 import com.w.wrpc.serializa.SerializationEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

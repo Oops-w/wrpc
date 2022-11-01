@@ -2,6 +2,7 @@ package com.w.wrpc;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.w.wrpc.annotation.RpcService;
 import com.w.wrpc.config.WrpcConfig;
 import com.w.wrpc.factory.SingletonBeanFactory;
 import com.w.wrpc.netty.server.NettyServer;

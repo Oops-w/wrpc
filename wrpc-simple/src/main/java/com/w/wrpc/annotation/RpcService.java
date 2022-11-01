@@ -1,4 +1,4 @@
-package com.w.wrpc;
+package com.w.wrpc.annotation;
 
 import com.w.wrpc.serializa.SerializationEnum;
 
